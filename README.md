@@ -8,34 +8,49 @@ The siLOH pipeline uses a targeted approach to identify candidate LOH regions by
 
 ```mermaid
 flowchart TD
-    subgraph Input
-        A[Input BAM File]
-        B[MAF30 SNPs List]
-        C[Reference Genome]
-    end
+    %% External inputs
+    A[Input BAM File]
+    C[Reference Genome]
+    
+    subgraph "Docker Container"
+        direction TB
+        
+        subgraph "Built-in Resources"
+            B[MAF30 SNPs List]
+            cent[Centromeres.json]
+            bed[Gene BED File]
+        end
 
-    subgraph "Step 1: Variant Calling"
-        D[Samtools mpileup]
-        E[VarScan2 pileup2cns]
-        F[Raw Variants at SNP Sites]
-    end
+        subgraph "Step 1: Variant Calling"
+            D[Samtools mpileup]
+            E[VarScan2 pileup2cns]
+            F[Raw Variants at SNP Sites]
+        end
 
-    subgraph "Step 2: LOH Analysis"
-        G[Analyze Variant Frequencies]
-        H{Is Position Homozygous?<br/>≤35% or ≥65%}
-        I[Build Region Streak]
-        J{Region Criteria Met?}
-        K[Split at Centromeres]
-    end
+        subgraph "Step 2: LOH Analysis"
+            G[Analyze Variant Frequencies]
+            H{Is Position Homozygous?<br/>≤35% or ≥65%}
+            I[Build Region Streak]
+            J{Region Criteria Met?}
+            K[Split at Centromeres]
+        end
 
-    subgraph "Step 3: Filtering & Output"
-        L{Final Region Filters}
-        M[Gene Annotation]
-        N[LOH Report]
+        subgraph "Step 3: Filtering & Output"
+            L{Final Region Filters}
+            M[Gene Annotation]
+        end
     end
+    
+    %% Output file
+    N[LOH Report CSV]
 
-    %% Connections
-    A & B & C --> D
+    %% Connections outside Docker
+    A --> D
+    C --> D
+    M --> N
+    
+    %% Connections inside Docker
+    B --> D
     D --> E
     E --> F
     F --> G
@@ -46,16 +61,20 @@ flowchart TD
     J -->|No| G
     J -->|"Yes<br/>≥5 homozygous sites<br/>≥1Mb size"| K
     K --> L
+    cent --> K
     L -->|"Pass:<br/>≥40 homozygous<br/>>90% confidence<br/>non-X chromosome"| M
-    M --> N
+    bed --> M
 
     %% Styling
     classDef input fill:#e3f2fd,stroke:#1565c0
+    classDef docker fill:#f5f5f5,stroke:#424242,stroke-width:2px
+    classDef resource fill:#e8eaf6,stroke:#3949ab
     classDef process fill:#f5f5f5,stroke:#424242
     classDef decision fill:#fff3e0,stroke:#ef6c00
     classDef output fill:#e8f5e9,stroke:#2e7d32
 
-    class A,B,C input
+    class A,C input
+    class B,cent,bed resource
     class D,E,F,G,I,K,M process
     class H,J,L decision
     class N output
