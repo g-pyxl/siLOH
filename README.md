@@ -1,10 +1,15 @@
-# siLOH - Loss of Heterozygosity Analysis Pipeline
+# siLOH - SNP Inferred Loss of Heterozygosity Analysis Pipeline
 
-siLOH is a Docker-based pipeline for analyzing Loss of Heterozygosity (LOH) from next-generation sequencing data. The pipeline integrates samtools, VarScan2, and a custom Python analysis script to identify regions of LOH.
+siLOH is a Docker-based pipeline for analysing Loss of Heterozygosity (LOH) from NGS data. The pipeline integrates samtools, VarScan2, and a custom Python analysis script to identify potential regions of Loss of Heterozygosity (LOH).
 
-The siLOH pipeline uses a targeted approach to identify Loss of Heterozygosity (LOH) regions by analyzing the allele frequencies of common SNPs (curated SNPs from dbSNP with Minor Allele Frequency (MAF) ≥ 30%) across the capture regions contained within an input BAM file.
+The siLOH pipeline uses a targeted approach to identify candidate LOH regions by analysing the allele frequencies of predefined common SNPs (curated SNPs from dbSNP with Minor Allele Frequency (MAF) ≥ 30%) across the capture regions contained within an input BAM file.
 
-Pileup Generation (samtools mpileup) > Consensus Calling (VarScan2 pileup2cns) > LOH Analysis (loh.py)
+## Pipeline Steps
+
+1. **Pileup Generation**: Uses samtools mpileup to generate pileup data at specified positions
+2. **Variant Calling**: VarScan2 analyzes the pileup to identify variants
+3. **LOH Analysis**: Custom Python script processes variants to identify LOH regions
+4. **Output Generation**: Results are saved in CSV format
 
 ## Prerequisites
 
@@ -68,13 +73,6 @@ docker run -v /path/to/ref:/app/ref \
 ```
 
 Replace `/path/to/` with your actual paths and `your_sample_name` with your BAM filename (without the .bam extension).
-
-## Pipeline Steps
-
-1. **Pileup Generation**: Uses samtools mpileup to generate pileup data at specified positions
-2. **Variant Calling**: VarScan2 analyzes the pileup to identify variants
-3. **LOH Analysis**: Custom Python script processes variants to identify LOH regions
-4. **Output Generation**: Results are saved in CSV format
 
 ## Output
 
