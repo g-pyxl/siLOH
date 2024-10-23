@@ -4,6 +4,18 @@ siLOH is a Docker-based pipeline for analysing Loss of Heterozygosity (LOH) from
 
 The siLOH pipeline uses a targeted approach to identify candidate LOH regions by analysing the allele frequencies of predefined common SNPs (curated SNPs from dbSNP with Minor Allele Frequency (MAF) ≥ 30%) across the capture regions contained within an input BAM file.
 
+## Important Notes on Usage ❗
+
+This tool is designed for research use and preliminary screening purposes only. Results should be considered indicative rather than diagnostic:
+
+- All LOH findings should be confirmed using validated diagnostic methods
+- Negative results do not rule out the presence of LOH
+- The tool is optimised for specificity over sensitivity to minimise false positives
+- Results should be interpreted in conjunction with other clinical and laboratory findings
+- This tool should not be used as the sole basis for diagnostic or treatment decisions
+
+For clinical applications, follow-up testing using validated diagnostic methods (such as SNP arrays, microsatellite analysis, or targeted sequencing) is required to confirm any findings.
+
 ## Pipeline Workflow
 
 ```mermaid
@@ -181,9 +193,34 @@ docker run -it --entrypoint=/bin/bash siloh
 - Currently supports hg19 reference genome
 - Single-sample processing
 - Requires sorted, indexed BAM files - .bai should be within same directory as BAM
+- Employs a high-specificity approach that trades sensitivity for reliability:
+  - Designed for expedited screening rather than comprehensive LOH detection
+  - Will only detect more obvious/extensive LOH regions to minimize false positives
+  - May miss subtle or complex LOH events that would be detected by traditional methods
+  - Less sensitive than traditional non-NGS methods like SNP arrays or microsatellite analysis
 
 ## Citation
 
+## Citation
+
+### Required Citations
+This tool incorporates several open-source tools and methodological approaches that should be cited:
+
+#### Tools
+* Li H, Handsaker B, Wysoker A, et al. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009;25(16):2078-2079. doi:10.1093/bioinformatics/btp352
+
+* Koboldt DC, Zhang Q, Larson DE, et al. VarScan 2: somatic mutation and copy number alteration discovery in cancer by exome sequencing. Genome Res. 2012;22(3):568-576. doi:10.1101/gr.129684.111
+
+#### Methodological Foundations
+* Tuna M, Knuutila S, Mills GB. Uniparental disomy in cancer. Trends Mol Med. 2009;15(3):120-128. doi:10.1016/j.molmed.2009.01.005
+
+* Ryland GL, Doyle MA, Goode D, et al. Loss of heterozygosity: what is it good for? BMC Med Genomics. 2015;8:45. doi:10.1186/s12920-015-0123-z
+
+### Related Methods
+For comparison with traditional approaches:
+* Takahashi S, Fukuda M, Mitani Y, et al. Microsatellite instability and LOH studies for assessment of mismatch repair deficiency in colorectal cancer. Methods Mol Biol. 2021;2265:147-162. doi:10.1007/978-1-0716-1209-5_11
+
+* González S, Jover L, Mila M, et al. Cost-effectiveness Analysis Comparing Different Techniques for MSI and LOH Studies in Lynch Syndrome Diagnosis. Appl Immunohistochem Mol Morphol. 2017;25(10):720-727. doi:10.1097/PAI.0000000000000370
 
 
 ## License
