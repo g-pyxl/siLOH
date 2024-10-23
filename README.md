@@ -1,8 +1,65 @@
-# siLOH - SNP Inferred Loss of Heterozygosity Analysis Pipeline
+# siLOH - 🛢️🔎 SNP Inferred Loss of Heterozygosity Analysis Pipeline
 
 siLOH is a Docker-based pipeline for analysing Loss of Heterozygosity (LOH) from NGS data. The pipeline integrates samtools, VarScan2, and a custom Python analysis script to identify potential regions of Loss of Heterozygosity (LOH).
 
 The siLOH pipeline uses a targeted approach to identify candidate LOH regions by analysing the allele frequencies of predefined common SNPs (curated SNPs from dbSNP with Minor Allele Frequency (MAF) ≥ 30%) across the capture regions contained within an input BAM file.
+
+## Pipeline Workflow
+
+```mermaid
+flowchart TD
+    subgraph Input
+        A[Input BAM File]
+        B[MAF30 SNPs List]
+        C[Reference Genome]
+    end
+
+    subgraph "Step 1: Variant Calling"
+        D[Samtools mpileup]
+        E[VarScan2 pileup2cns]
+        F[Raw Variants at SNP Sites]
+    end
+
+    subgraph "Step 2: LOH Analysis"
+        G[Analyze Variant Frequencies]
+        H{Is Position Homozygous?<br/>≤35% or ≥65%}
+        I[Build Region Streak]
+        J{Region Criteria Met?}
+        K[Split at Centromeres]
+    end
+
+    subgraph "Step 3: Filtering & Output"
+        L{Final Region Filters}
+        M[Gene Annotation]
+        N[LOH Report]
+    end
+
+    %% Connections
+    A & B & C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H -->|Yes| I
+    H -->|No| G
+    I --> J
+    J -->|No| G
+    J -->|"Yes<br/>≥5 homozygous sites<br/>≥1Mb size"| K
+    K --> L
+    L -->|"Pass:<br/>≥40 homozygous<br/>>90% confidence<br/>non-X chromosome"| M
+    M --> N
+
+    %% Styling
+    classDef input fill:#e3f2fd,stroke:#1565c0
+    classDef process fill:#f5f5f5,stroke:#424242
+    classDef decision fill:#fff3e0,stroke:#ef6c00
+    classDef output fill:#e8f5e9,stroke:#2e7d32
+
+    class A,B,C input
+    class D,E,F,G,I,K,M process
+    class H,J,L decision
+    class N output
+```
 
 ## Pipeline Steps
 
